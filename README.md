@@ -33,10 +33,13 @@ A full-featured Web UI and MTProto client for sending Telegram gifts with Telegr
 
 ### 🚀 Quick Start
 
-#### Option 1: 1-Click Launch (Windows)
-Just double-click **`start.bat`**. It will automatically set up the virtual environment, install dependencies, and launch the web interface.
+#### Option 1: Standalone Windows .exe (No Python required)
+Download **`TelegramStarGifts.exe`** from [Releases](https://github.com/RUBS-new/tg-star-gifts/releases) and double-click to run.
 
-#### Option 2: Manual Installation
+#### Option 2: 1-Click Launch (Python)
+Double-click **`start.bat`**. It will automatically set up the virtual environment and launch the server.
+
+#### Option 3: Manual Installation
 ```bash
 git clone https://github.com/RUBS-new/tg-star-gifts.git
 cd tg-star-gifts
@@ -77,10 +80,13 @@ PORT=5050
 
 ### 🚀 Быстрый запуск
 
-#### Вариант 1: Запуск в 1 клик (Windows)
-Просто дважды кликните по файлу **`start.bat`**. Он сам создаст окружение, установит нужные библиотеки и откроет сайт в браузере.
+#### Вариант 1: Готовый .exe файл (Python не требуется)
+Скачайте **`TelegramStarGifts.exe`** из раздела [Releases](https://github.com/RUBS-new/tg-star-gifts/releases) и запустите двойным кликом.
 
-#### Вариант 2: Запуск через консоль
+#### Вариант 2: Запуск через start.bat
+Дважды кликните по файлу **`start.bat`**. Он сам создаст окружение, установит зависимости и откроет сайт.
+
+#### Вариант 3: Запуск через консоль
 ```bash
 git clone https://github.com/RUBS-new/tg-star-gifts.git
 cd tg-star-gifts
