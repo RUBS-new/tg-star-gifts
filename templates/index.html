@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TG Star Gifts</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: {
+            bg:      { DEFAULT: '#0b0f19', card: '#111827', input: '#0d1320' },
+            accent:  { DEFAULT: '#6366f1', hover: '#818cf8', glow: 'rgba(99,102,241,0.25)' },
+            gold:    { DEFAULT: '#f59e0b', hover: '#fbbf24', glow: 'rgba(245,158,11,0.3)' },
+            surface: { DEFAULT: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.08)' },
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      background: #0b0f19; color: #e2e8f0; font-family: 'Inter', system-ui, sans-serif;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: -1;
+      background:
+        radial-gradient(ellipse 700px 450px at 15% 15%, rgba(99,102,241,0.1), transparent),
+        radial-gradient(ellipse 600px 400px at 85% 85%, rgba(245,158,11,0.07), transparent);
+    }
+
+    .card {
+      background: rgba(17,24,39,0.8); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 1.25rem;
+    }
+
+    .gift-card {
+      background: rgba(17,24,39,0.55); backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(255,255,255,0.06); border-radius: 1rem;
+      transition: all 0.25s cubic-bezier(.4,0,.2,1); cursor: pointer; position: relative; overflow: hidden;
+    }
+    .gift-card:hover {
+      border-color: rgba(99,102,241,0.45);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .gift-card.active {
+      border-color: #6366f1;
+      background: rgba(99,102,241,0.12);
+      box-shadow: 0 0 24px rgba(99,102,241,0.22);
+    }
+    .gift-card.active::after {
+      content: ''; position: absolute; top: 8px; right: 8px; width: 20px; height: 20px;
+      background: #6366f1; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+      background-size: 13px; background-repeat: no-repeat; background-position: center;
+    }
+
+    .input-field {
+      background: rgba(13,19,32,0.95); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 0.875rem; padding: 0.75rem 1rem; font-size: 0.9375rem;
+      color: #f1f5f9; width: 100%; outline: none; transition: all 0.2s;
+    }
+    .input-field:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.2); }
+    .input-field::placeholder { color: #4b5563; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #4f46e5); color: white;
+      font-weight: 600; padding: 0.85rem; border-radius: 0.875rem; width: 100%;
+      border: none; cursor: pointer; transition: all 0.2s; font-size: 0.9375rem;
+    }
+    .btn-primary:hover { box-shadow: 0 4px 20px rgba(99,102,241,0.45); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #f59e0b, #d97706); color: #1a1a2e;
+      font-weight: 700; padding: 0.9rem; border-radius: 0.875rem; width: 100%;
+      border: none; cursor: pointer; transition: all 0.2s; font-size: 0.9375rem;
+    }
+    .btn-gold:hover { box-shadow: 0 4px 25px rgba(245,158,11,0.45); transform: translateY(-1px); }
+
+    .btn-green {
+      background: linear-gradient(135deg, #10b981, #059669); color: white;
+      font-weight: 600; padding: 0.85rem; border-radius: 0.875rem; width: 100%;
+      border: none; cursor: pointer; transition: all 0.2s; font-size: 0.9375rem;
+    }
+    .btn-green:hover { box-shadow: 0 4px 20px rgba(16,185,129,0.45); transform: translateY(-1px); }
+
+    @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 8px rgba(245,158,11,0.3); } 50% { box-shadow: 0 0 16px rgba(245,158,11,0.5); } }
+    .stars-badge { animation: pulse-glow 3s ease-in-out infinite; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <header class="border-b border-surface-border sticky top-0 z-30" style="background:rgba(11,15,25,0.9);backdrop-filter:blur(16px);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3.5">
+        <div class="w-11 h-11 rounded-2xl bg-accent/15 flex items-center justify-center text-accent text-xl shadow-lg shadow-accent/10">
+          <i class="fa-solid fa-gift"></i>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold tracking-tight text-white leading-tight">TG Star Gifts Sender</h1>
+          <p class="text-xs text-gray-400 hidden sm:block">Отправка эксклюзивных подарков Telegram через MTProto</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="openProxyModal()" class="px-3 py-1.5 rounded-xl bg-surface border border-surface-border hover:border-accent/40 text-xs text-gray-200 flex items-center gap-2 transition">
+          <i class="fa-solid fa-shield-halved text-accent"></i>
+          <span id="headerProxyBadge" class="font-mono text-xs text-gray-300">Прокси</span>
+        </button>
+
+        <div id="userBadge" class="hidden flex items-center gap-3">
+          <div class="stars-badge bg-gold/15 border border-gold/40 text-gold px-3.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5">
+            <i class="fa-solid fa-star text-xs"></i> <span id="starsBalance">0</span> Stars
+          </div>
+          <span id="userName" class="text-xs font-semibold text-gray-200 hidden sm:inline"></span>
+          <button onclick="logout()" title="Выйти" class="w-8 h-8 rounded-xl flex items-center justify-center text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition">
+            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-7 flex-1">
+
+    <aside class="lg:col-span-5 xl:col-span-4 flex flex-col justify-start">
+
+      <div id="authCard" class="card p-6 space-y-4 shadow-2xl">
+        <div class="flex items-center justify-between pb-1 border-b border-surface-border">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-accent/15 flex items-center justify-center text-accent text-sm">
+              <i class="fa-solid fa-key"></i>
+            </div>
+            <div>
+              <h2 class="text-base font-bold text-white leading-tight">Авторизация</h2>
+              <p class="text-xs text-gray-400">Вход в Telegram</p>
+            </div>
+          </div>
+          <button onclick="openProxyModal()" class="text-xs text-accent hover:text-accent-hover flex items-center gap-1.5 bg-accent/10 px-2.5 py-1 rounded-lg border border-accent/25 transition">
+            <i class="fa-solid fa-sliders text-[11px]"></i> Прокси
+          </button>
+        </div>
+
+        <div id="authStep1" class="space-y-3.5">
+          <div>
+            <label class="text-[11px] uppercase tracking-wider text-gray-400 block mb-1 font-semibold">API ID</label>
+            <input type="text" id="apiId" placeholder="12345678" value="{{ default_api_id }}" class="input-field">
+          </div>
+          <div>
+            <label class="text-[11px] uppercase tracking-wider text-gray-400 block mb-1 font-semibold">API Hash</label>
+            <input type="text" id="apiHash" placeholder="abcdef0123456789..." value="{{ default_api_hash }}" class="input-field">
+          </div>
+          <div>
+            <label class="text-[11px] uppercase tracking-wider text-gray-400 block mb-1 font-semibold">Номер телефона</label>
+            <input type="text" id="phone" placeholder="+7 999 123 45 67" class="input-field">
+          </div>
+
+          <button onclick="sendCode()" id="btnSendCode" class="btn-primary flex items-center justify-center gap-2 mt-2">
+            <i class="fa-solid fa-paper-plane text-sm"></i> Получить код в Telegram
+          </button>
+        </div>
+
+        <div id="authStep2" class="hidden space-y-3.5">
+          <div>
+            <label class="text-[11px] uppercase tracking-wider text-gray-400 block mb-1 font-semibold">Код подтверждения</label>
+            <input type="text" id="authCode" placeholder="12345" class="input-field text-center tracking-[0.5em] text-lg font-mono font-bold">
+          </div>
+          <div id="passwordField" class="hidden">
+            <label class="text-[11px] uppercase tracking-wider text-gray-400 block mb-1 font-semibold">2FA Пароль</label>
+            <input type="password" id="authPassword" placeholder="Облачный пароль" class="input-field">
+          </div>
+          <button onclick="signIn()" id="btnSignIn" class="btn-green flex items-center justify-center gap-2">
+            <i class="fa-solid fa-right-to-bracket text-sm"></i> Войти в аккаунт
+          </button>
+        </div>
+
+        <div id="authAlert" class="hidden p-3 rounded-xl text-xs"></div>
+      </div>
+
+      <div id="sendCard" class="hidden card p-6 space-y-4 shadow-2xl">
+        <div class="flex items-center justify-between pb-1 border-b border-surface-border">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-gold/15 flex items-center justify-center text-gold text-sm">
+              <i class="fa-solid fa-paper-plane"></i>
+            </div>
+            <div>
+              <h2 class="text-base font-bold text-white leading-tight">Отправить подарок</h2>
+              <p class="text-xs text-gray-400">С баланса Stars</p>
+            </div>
+          </div>
+          <span class="text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full font-semibold flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-check text-[10px]"></i> Готово
+          </span>
+        </div>
+
+        <div class="space-y-3.5">
+          <div>
+            <label class="text-[11px] uppercase tracking-wider text-gray-400 block mb-1 font-semibold">Получатель (@username или ID)</label>
+            <div class="relative">
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">@</span>
+              <input type="text" id="targetUser" oninput="onTargetUserInput(this.value)" placeholder="username или 12345678" class="input-field pl-8">
+            </div>
+            <div id="recipientPreview" class="hidden mt-2 p-2.5 rounded-xl bg-surface border border-surface-border flex items-center justify-between transition-all">
+              <div class="flex items-center gap-2.5">
+                <div id="recipientAvatar" class="w-8 h-8 rounded-full bg-accent/20 border border-accent/40 text-accent font-bold flex items-center justify-center text-xs uppercase">
+                  ?
+                </div>
+                <div>
+                  <div id="recipientName" class="text-xs font-bold text-white leading-tight">Загрузка...</div>
+                  <div id="recipientDetails" class="text-[10px] text-gray-400 font-mono">@username</div>
+                </div>
+              </div>
+              <span id="recipientStatusBadge" class="text-[10px] bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-md font-semibold">
+                Найден
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label class="text-[11px] uppercase tracking-wider text-gray-400 block mb-1 font-semibold">Сообщение к подарку</label>
+            <textarea id="giftMessage" rows="2" placeholder="С праздником! 🎉" class="input-field resize-none text-sm"></textarea>
+          </div>
+
+          <label class="flex items-center gap-2.5 cursor-pointer select-none pt-1">
+            <div class="relative">
+              <input type="checkbox" id="hideName" class="sr-only peer">
+              <div class="w-9 h-5 bg-gray-700 rounded-full peer-checked:bg-accent transition-colors"></div>
+              <div class="absolute top-[2px] left-[2px] w-4 h-4 bg-gray-300 rounded-full peer-checked:translate-x-4 peer-checked:bg-white transition-transform"></div>
+            </div>
+            <span class="text-xs font-medium text-gray-300">Анонимно (скрыть имя отправителя)</span>
+          </label>
+
+          <button onclick="openConfirmModal()" id="btnSubmit" class="btn-gold flex items-center justify-center gap-2 mt-2">
+            <i class="fa-solid fa-star text-sm"></i>
+            <span>Отправить за 50 Stars ⭐</span>
+          </button>
+
+          <div id="statusAlert" class="hidden p-3 rounded-xl text-xs"></div>
+        </div>
+      </div>
+
+    </aside>
+
+    <section class="lg:col-span-7 xl:col-span-8 space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <h2 class="text-base font-bold text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-boxes-stacked text-accent"></i> Каталог подарков
+          </h2>
+          <span class="text-xs font-semibold text-gold bg-gold/10 border border-gold/30 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+            <i class="fa-solid fa-star text-[10px]"></i> 50 Stars каждый
+          </span>
+        </div>
+        <div class="text-xs text-gray-300 font-mono bg-surface px-3 py-1 rounded-xl border border-surface-border">
+          ID: <span id="selectedGiftDisplay" class="text-accent font-bold">{{ gifts[0].id }}</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3.5">
+        {% for gift in gifts %}
+        <div onclick="selectGift('{{ gift.id }}', '{{ gift.name }}', '{{ gift.image }}', this)"
+             class="gift-card p-3.5 flex flex-col items-center text-center relative group">
+          {% if gift.image %}
+          <div class="w-20 h-20 mb-2 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 drop-shadow-md">
+            <img src="/static/images/{{ gift.image }}" alt="{{ gift.name }}" class="w-full h-full object-contain" loading="lazy" />
+          </div>
+          {% else %}
+          <div class="text-4xl mb-2 w-20 h-20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">{{ gift.icon }}</div>
+          {% endif %}
+          <div class="text-xs font-bold text-gray-100 mb-1 leading-tight">{{ gift.name }}</div>
+          <div class="flex items-center gap-1.5 mt-auto pt-1">
+            <span class="text-[11px] font-bold text-gold bg-gold/15 border border-gold/30 px-2 py-0.5 rounded-md flex items-center gap-1">
+              <i class="fa-solid fa-star text-[9px]"></i> 50 ⭐
+            </span>
+            <span class="text-[9px] uppercase tracking-wider font-semibold text-gray-400 bg-surface px-1.5 py-0.5 rounded-md">{{ gift.badge }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="card p-3.5 flex items-center gap-3 mt-3">
+        <span class="text-xs font-semibold text-gray-400 whitespace-nowrap pl-1"><i class="fa-solid fa-hashtag text-accent mr-1"></i> Свой Gift ID:</span>
+        <input type="text" id="customGiftId" oninput="selectCustomGift(this.value)"
+               placeholder="Введите числовой ID любого другого подарка..."
+               class="input-field text-xs font-mono py-2">
+      </div>
+    </section>
+
+  </main>
+
+  <div id="confirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="card max-w-md w-full p-6 space-y-4 border border-gold/30 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+      <div class="flex items-center justify-between border-b border-surface-border pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-gold/20 text-gold flex items-center justify-center text-base">
+            <i class="fa-solid fa-shield-cat"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Подтверждение отправки</h3>
+            <p class="text-xs text-gray-400">Защита от случайного списания</p>
+          </div>
+        </div>
+        <button onclick="closeConfirmModal()" class="text-gray-400 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-surface border border-surface-border space-y-3">
+        <div class="flex items-center gap-3">
+          <div id="confirmGiftImgBox" class="w-16 h-16 rounded-xl bg-surface-border/40 p-1.5 flex items-center justify-center shrink-0">
+            <img id="confirmGiftImg" src="" class="w-full h-full object-contain" />
+          </div>
+          <div>
+            <div id="confirmGiftName" class="text-sm font-bold text-white">Новогодний мишка</div>
+            <div class="text-[11px] text-gray-400 font-mono">ID: <span id="confirmGiftId" class="text-accent"></span></div>
+            <div class="text-xs font-bold text-gold flex items-center gap-1 mt-1">
+              <i class="fa-solid fa-star text-xs"></i> Стоимость: 50 Stars
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-surface-border/60 pt-2.5 space-y-1 text-xs">
+          <div class="flex justify-between">
+            <span class="text-gray-400">Получатель:</span>
+            <span id="confirmRecipient" class="font-bold text-white">@username</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Режим отправки:</span>
+            <span id="confirmAnon" class="text-gray-200">Публично</span>
+          </div>
+          <div id="confirmMsgRow" class="flex justify-between">
+            <span class="text-gray-400">Сообщение:</span>
+            <span id="confirmMsg" class="text-gray-200 italic max-w-[200px] truncate"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 rounded-xl bg-gold/10 border border-gold/25 text-xs text-gold flex items-start gap-2">
+        <i class="fa-solid fa-circle-exclamation mt-0.5 text-sm"></i>
+        <div>С вашего баланса Telegram будет списано ровно <b>50 Stars</b>. Вы подтверждаете отправку?</div>
+      </div>
+
+      <div class="flex gap-2.5 pt-1">
+        <button onclick="confirmAndSendGift()" id="btnConfirmSend" class="btn-gold py-2.5 text-xs font-bold flex items-center justify-center gap-2 flex-1 shadow-lg shadow-gold/20">
+          <i class="fa-solid fa-check text-xs"></i> Да, отправить за 50 ⭐
+        </button>
+        <button onclick="closeConfirmModal()" class="px-4 py-2.5 rounded-xl bg-surface border border-surface-border text-xs text-gray-300 hover:text-white transition">
+          Отмена
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="proxyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="card max-w-md w-full p-6 space-y-4 border border-surface-border shadow-2xl relative">
+      <div class="flex items-center justify-between border-b border-surface-border pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-accent/20 text-accent flex items-center justify-center text-base">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Настройка Прокси</h3>
+            <p class="text-xs text-gray-400">Обход блокировок Telegram DC</p>
+          </div>
+        </div>
+        <button onclick="closeProxyModal()" class="text-gray-400 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3.5">
+        <div>
+          <label class="text-[11px] uppercase tracking-wider text-gray-400 block mb-1 font-semibold">Тип подключения</label>
+          <select id="modalProxyType" onchange="onModalProxyTypeChange()" class="input-field py-2 text-sm">
+            <option value="socks5">⚡ SOCKS5</option>
+            <option value="https">🌐 HTTPS / HTTP</option>
+            <option value="system">🔄 Автодетект (VPN)</option>
+            <option value="direct">🚫 Прямое подключение</option>
+          </select>
+        </div>
+
+        <div id="modalProxyAddrFields" class="grid grid-cols-3 gap-2.5">
+          <div class="col-span-2">
+            <label class="text-[11px] uppercase tracking-wider text-gray-400 block mb-1 font-semibold">Хост / IP</label>
+            <input type="text" id="modalProxyHost" value="127.0.0.1" placeholder="127.0.0.1" class="input-field py-2 text-sm font-mono">
+          </div>
+          <div>
+            <label class="text-[11px] uppercase tracking-wider text-gray-400 block mb-1 font-semibold">Порт</label>
+            <input type="number" id="modalProxyPort" value="1080" placeholder="1080" class="input-field py-2 text-sm font-mono">
+          </div>
+        </div>
+
+        <div id="modalProxyAuthFields" class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="text-[11px] uppercase tracking-wider text-gray-400 block mb-1 font-semibold">Логин (опционально)</label>
+            <input type="text" id="modalProxyUser" placeholder="логин" class="input-field py-2 text-sm">
+          </div>
+          <div>
+            <label class="text-[11px] uppercase tracking-wider text-gray-400 block mb-1 font-semibold">Пароль (опционально)</label>
+            <input type="password" id="modalProxyPass" placeholder="пароль" class="input-field py-2 text-sm">
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button type="button" onclick="setLocalVpnPreset()" class="w-full py-1.5 px-2.5 rounded-lg bg-surface border border-surface-border hover:border-accent/40 text-[11px] text-gray-300 flex items-center justify-center gap-1.5 transition">
+            <i class="fa-solid fa-bolt text-accent"></i> Автодетект локального VPN
+          </button>
+        </div>
+
+        <div id="proxyModalAlert" class="hidden p-3 rounded-xl text-xs"></div>
+      </div>
+
+      <div class="flex flex-col gap-2 pt-2">
+        <div class="flex gap-2">
+          <button onclick="testProxyConnection()" id="btnTestProxy" class="py-2 px-3 rounded-xl bg-surface border border-surface-border hover:border-accent/40 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1.5 transition">
+            <i class="fa-solid fa-vial"></i> Проверить связь
+          </button>
+          <button onclick="saveModalProxy()" id="btnSaveProxy" class="btn-primary py-2 text-xs flex items-center justify-center gap-2 flex-1">
+            <i class="fa-solid fa-check text-xs"></i> Сохранить и применить
+          </button>
+        </div>
+        <button onclick="closeProxyModal()" class="w-full py-1.5 rounded-lg text-xs text-gray-400 hover:text-white text-center">
+          Закрыть
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="border-t border-surface-border py-3 mt-auto">
+    <p class="text-center text-xs text-gray-500">Star Gifts Sender &middot; MTProto API</p>
+  </footer>
+
+  <script>
+    let selectedGiftId = "{{ gifts[0].id }}";
+    let isAuthorized = false;
+    let currentProxyState = { type: 'socks5', host: '127.0.0.1', port: 1080, user: '', pass: '' };
+
+    function openProxyModal() {
+      document.getElementById('modalProxyType').value = currentProxyState.type || 'socks5';
+      document.getElementById('modalProxyHost').value = currentProxyState.host || '127.0.0.1';
+      document.getElementById('modalProxyPort').value = currentProxyState.port || 1080;
+      document.getElementById('modalProxyUser').value = currentProxyState.user || '';
+      document.getElementById('modalProxyPass').value = currentProxyState.pass || '';
+      onModalProxyTypeChange();
+      document.getElementById('proxyModal').classList.remove('hidden');
+    }
+
+    function closeProxyModal() {
+      document.getElementById('proxyModal').classList.add('hidden');
+    }
+
+    function onModalProxyTypeChange() {
+      const val = document.getElementById('modalProxyType').value;
+      const addr = document.getElementById('modalProxyAddrFields');
+      const auth = document.getElementById('modalProxyAuthFields');
+      if (val === 'direct' || val === 'system') {
+        addr.classList.add('opacity-40', 'pointer-events-none');
+        auth.classList.add('opacity-40', 'pointer-events-none');
+      } else {
+        addr.classList.remove('opacity-40', 'pointer-events-none');
+        auth.classList.remove('opacity-40', 'pointer-events-none');
+      }
+    }
+
+    function setLocalVpnPreset() {
+      document.getElementById('modalProxyType').value = 'https';
+      document.getElementById('modalProxyHost').value = '127.0.0.1';
+      document.getElementById('modalProxyPort').value = '49544';
+      document.getElementById('modalProxyUser').value = '';
+      document.getElementById('modalProxyPass').value = '';
+      onModalProxyTypeChange();
+      const alertEl = document.getElementById('proxyModalAlert');
+      alertEl.classList.remove('hidden');
+      alertEl.className = 'p-2 rounded-lg text-xs bg-accent/15 text-accent border border-accent/30';
+      alertEl.innerText = 'Подставлен активный локальный VPN порт (127.0.0.1:49544).';
+    }
+
+    async function testProxyConnection() {
+      const btn = document.getElementById('btnTestProxy');
+      const alertEl = document.getElementById('proxyModalAlert');
+      const ptype = document.getElementById('modalProxyType').value;
+      const host = document.getElementById('modalProxyHost').value.trim();
+      const port = parseInt(document.getElementById('modalProxyPort').value) || 0;
+      const user = document.getElementById('modalProxyUser').value.trim();
+      const pass = document.getElementById('modalProxyPass').value.trim();
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-xs"></i> Тест...';
+      alertEl.classList.add('hidden');
+
+      try {
+        const res = await fetch('/api/proxy/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            enabled: ptype !== 'direct',
+            proxy_type: ptype,
+            host: host,
+            port: port,
+            username: user || null,
+            password: pass || null
+          })
+        });
+        const data = await res.json();
+        alertEl.classList.remove('hidden');
+        if (res.ok && data.success) {
+          alertEl.className = 'p-3 rounded-xl text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-500/30';
+          alertEl.innerHTML = '<i class="fa-solid fa-check text-emerald-400 mr-1"></i> ' + data.message;
+        } else {
+          alertEl.className = 'p-3 rounded-xl text-xs bg-red-500/15 text-red-300 border border-red-500/30';
+          alertEl.innerHTML = '<i class="fa-solid fa-xmark text-red-400 mr-1"></i> ' + (data.message || data.error);
+        }
+      } catch (e) {
+        alertEl.classList.remove('hidden');
+        alertEl.className = 'p-3 rounded-xl text-xs bg-red-500/15 text-red-300 border border-red-500/30';
+        alertEl.innerText = 'Ошибка соединения: ' + e;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-vial"></i> Проверить связь';
+      }
+    }
+
+    async function saveModalProxy() {
+      const btn = document.getElementById('btnSaveProxy');
+      const alertEl = document.getElementById('proxyModalAlert');
+      const ptype = document.getElementById('modalProxyType').value;
+      const host = document.getElementById('modalProxyHost').value.trim();
+      const port = parseInt(document.getElementById('modalProxyPort').value) || 0;
+      const user = document.getElementById('modalProxyUser').value.trim();
+      const pass = document.getElementById('modalProxyPass').value.trim();
+
+      currentProxyState = { type: ptype, host, port, user, pass };
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-xs"></i> Сохранение...';
+      alertEl.classList.add('hidden');
+
+      try {
+        const res = await fetch('/api/proxy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            enabled: ptype !== 'direct',
+            proxy_type: ptype,
+            host: host,
+            port: port,
+            username: user || null,
+            password: pass || null
+          })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          updateProxyBadge(data.proxy);
+          alertEl.classList.remove('hidden');
+          alertEl.className = 'p-3 rounded-xl text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-500/30';
+          alertEl.innerHTML = '<i class="fa-solid fa-check text-emerald-400 mr-1"></i> Прокси сохранён';
+          setTimeout(() => closeProxyModal(), 500);
+        } else {
+          alertEl.classList.remove('hidden');
+          alertEl.className = 'p-3 rounded-xl text-xs bg-red-500/15 text-red-300 border border-red-500/30';
+          alertEl.innerText = data.error || 'Ошибка применения';
+        }
+      } catch (e) {
+        alertEl.classList.remove('hidden');
+        alertEl.className = 'p-3 rounded-xl text-xs bg-red-500/15 text-red-300 border border-red-500/30';
+        alertEl.innerText = 'Ошибка запроса: ' + e;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-check text-xs"></i> Сохранить и применить';
+      }
+    }
+
+    function updateProxyBadge(proxyData) {
+      const el = document.getElementById('headerProxyBadge');
+      if (proxyData && proxyData.active) {
+        el.innerText = `${proxyData.type} (${proxyData.host}:${proxyData.port})`;
+        el.className = 'font-mono text-xs text-accent font-semibold';
+      } else {
+        el.innerText = 'Прокси: Прямое';
+        el.className = 'font-mono text-xs text-gray-400';
+      }
+    }
+
+    async function checkStatus() {
+      try {
+        const [statusRes, proxyRes] = await Promise.all([
+          fetch('/api/status'),
+          fetch('/api/proxy')
+        ]);
+        const statusData = await statusRes.json();
+        const proxyData = await proxyRes.json();
+
+        updateProxyBadge(proxyData);
+
+        if (statusData.authorized) {
+          isAuthorized = true;
+          document.getElementById('authCard').classList.add('hidden');
+          document.getElementById('sendCard').classList.remove('hidden');
+
+          document.getElementById('userBadge').classList.remove('hidden');
+          document.getElementById('userBadge').classList.add('flex');
+          document.getElementById('starsBalance').innerText = statusData.balance >= 0 ? statusData.balance.toLocaleString() : '—';
+          document.getElementById('userName').innerText = statusData.user.first_name + (statusData.user.username ? ` (@${statusData.user.username})` : '');
+        } else {
+          isAuthorized = false;
+          document.getElementById('authCard').classList.remove('hidden');
+          document.getElementById('sendCard').classList.add('hidden');
+          document.getElementById('userBadge').classList.add('hidden');
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    let selectedGift = {
+      id: "{{ gifts[0].id }}",
+      name: "{{ gifts[0].name }}",
+      image: "{{ gifts[0].image }}"
+    };
+    let resolveTimer = null;
+
+    function selectGift(id, name, image, el) {
+      selectedGift = { id, name, image };
+      selectedGiftId = id;
+      document.querySelectorAll('.gift-card').forEach(c => c.classList.remove('active'));
+      if (el) el.classList.add('active');
+      document.getElementById('selectedGiftDisplay').innerText = id;
+      document.getElementById('customGiftId').value = '';
+    }
+
+    function selectCustomGift(val) {
+      if (val.trim()) {
+        selectedGiftId = val.trim();
+        selectedGift = { id: val.trim(), name: 'Подарок', image: '' };
+        document.querySelectorAll('.gift-card').forEach(c => c.classList.remove('active'));
+        document.getElementById('selectedGiftDisplay').innerText = val;
+      }
+    }
+
+    function onTargetUserInput(val) {
+      clearTimeout(resolveTimer);
+      const previewBox = document.getElementById('recipientPreview');
+      const cleanVal = val.trim().replace(/^@/, '');
+
+      if (!cleanVal || cleanVal.length < 3) {
+        previewBox.classList.add('hidden');
+        return;
+      }
+
+      previewBox.classList.remove('hidden');
+      document.getElementById('recipientName').innerText = 'Поиск...';
+      document.getElementById('recipientDetails').innerText = '@' + cleanVal;
+      document.getElementById('recipientAvatar').innerText = cleanVal.charAt(0).toUpperCase();
+      document.getElementById('recipientStatusBadge').className = 'text-[10px] bg-accent/15 text-accent border border-accent/30 px-2 py-0.5 rounded-md font-semibold';
+      document.getElementById('recipientStatusBadge').innerText = 'Проверка';
+
+      resolveTimer = setTimeout(async () => {
+        try {
+          const res = await fetch(`/api/user/resolve?query=${encodeURIComponent(cleanVal)}`);
+          const data = await res.json();
+          if (res.ok && data.success) {
+            document.getElementById('recipientName').innerText = data.name;
+            document.getElementById('recipientDetails').innerText = data.username ? `${data.username} (ID: ${data.id})` : `ID: ${data.id}`;
+            document.getElementById('recipientAvatar').innerText = (data.name || cleanVal).charAt(0).toUpperCase();
+            document.getElementById('recipientStatusBadge').className = 'text-[10px] bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-md font-semibold';
+            document.getElementById('recipientStatusBadge').innerText = 'Найден';
+          } else {
+            document.getElementById('recipientName').innerText = 'Пользователь не найден';
+            document.getElementById('recipientStatusBadge').className = 'text-[10px] bg-red-500/15 text-red-300 border border-red-500/30 px-2 py-0.5 rounded-md font-semibold';
+            document.getElementById('recipientStatusBadge').innerText = 'Не найден';
+          }
+        } catch {
+          document.getElementById('recipientName').innerText = '@' + cleanVal;
+          document.getElementById('recipientStatusBadge').innerText = 'Готов';
+        }
+      }, 400);
+    }
+
+    function openConfirmModal() {
+      if (!isAuthorized) return;
+      const target_user = document.getElementById('targetUser').value.trim();
+      const message = document.getElementById('giftMessage').value.trim();
+      const hide_name = document.getElementById('hideName').checked;
+      const alertBox = document.getElementById('statusAlert');
+
+      if (!target_user) {
+        alertBox.classList.remove('hidden');
+        alertBox.className = 'p-3 rounded-xl text-xs bg-red-500/15 text-red-300 border border-red-500/30';
+        alertBox.innerText = 'Введите username или ID получателя';
+        return;
+      }
+
+      document.getElementById('confirmGiftName').innerText = selectedGift.name || 'Подарок';
+      document.getElementById('confirmGiftId').innerText = selectedGift.id;
+      if (selectedGift.image) {
+        document.getElementById('confirmGiftImg').src = `/static/images/${selectedGift.image}`;
+        document.getElementById('confirmGiftImg').classList.remove('hidden');
+      } else {
+        document.getElementById('confirmGiftImg').classList.add('hidden');
+      }
+
+      document.getElementById('confirmRecipient').innerText = target_user.startsWith('@') ? target_user : `@${target_user}`;
+      document.getElementById('confirmAnon').innerText = hide_name ? '🕶️ Анонимно' : '👤 Публично';
+      if (message) {
+        document.getElementById('confirmMsgRow').classList.remove('hidden');
+        document.getElementById('confirmMsg').innerText = `«${message}»`;
+      } else {
+        document.getElementById('confirmMsgRow').classList.add('hidden');
+      }
+
+      document.getElementById('confirmModal').classList.remove('hidden');
+    }
+
+    function closeConfirmModal() {
+      document.getElementById('confirmModal').classList.add('hidden');
+    }
+
+    async function confirmAndSendGift() {
+      const btn = document.getElementById('btnConfirmSend');
+      const target_user = document.getElementById('targetUser').value.trim();
+      const message = document.getElementById('giftMessage').value.trim();
+      const hide_name = document.getElementById('hideName').checked;
+      const alertBox = document.getElementById('statusAlert');
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-xs"></i> Отправка...';
+
+      try {
+        const res = await fetch('/api/gifts/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ target_user, gift_id: parseInt(selectedGift.id), message, hide_name })
+        });
+        const rawText = await res.text();
+        let data;
+        try {
+          data = JSON.parse(rawText);
+        } catch (e) {
+          data = { error: rawText || 'Ошибка ответа сервера' };
+        }
+
+        closeConfirmModal();
+        alertBox.classList.remove('hidden');
+        if (res.ok && data.success) {
+          launchSuccessConfetti();
+          alertBox.className = 'p-3 rounded-xl text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 animate-bounce';
+          setTimeout(() => alertBox.classList.remove('animate-bounce'), 1000);
+          alertBox.innerHTML = '<i class="fa-solid fa-gift text-emerald-400 mr-1 text-sm"></i> ' + data.message;
+          if (data.new_balance !== undefined && data.new_balance >= 0)
+            document.getElementById('starsBalance').innerText = data.new_balance.toLocaleString();
+        } else {
+          alertBox.className = 'p-3 rounded-xl text-xs bg-red-500/15 text-red-300 border border-red-500/30';
+          alertBox.innerHTML = '<i class="fa-solid fa-xmark-circle text-red-400 mr-1"></i> ' + (data.error || 'Ошибка отправки подарка');
+        }
+      } catch (err) {
+        closeConfirmModal();
+        alertBox.classList.remove('hidden');
+        alertBox.className = 'p-3 rounded-xl text-xs bg-red-500/15 text-red-300 border border-red-500/30';
+        alertBox.innerText = 'Ошибка запроса: ' + err;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-check text-xs"></i> Да, отправить за 50 ⭐';
+      }
+    }
+
+    function launchSuccessConfetti() {
+      if (typeof confetti !== 'function') return;
+
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#f59e0b', '#fbbf24', '#6366f1', '#a855f7', '#10b981', '#ffffff']
+      });
+
+      setTimeout(() => {
+        confetti({
+          particleCount: 50,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.7 },
+          colors: ['#f59e0b', '#6366f1', '#ec4899']
+        });
+        confetti({
+          particleCount: 50,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.7 },
+          colors: ['#f59e0b', '#6366f1', '#10b981']
+        });
+      }, 200);
+
+      setTimeout(() => {
+        confetti({
+          particleCount: 40,
+          spread: 100,
+          origin: { y: 0.4 },
+          shapes: ['star'],
+          colors: ['#f59e0b', '#fbbf24', '#ffffff']
+        });
+      }, 400);
+    }
+
+    function showAuthAlert(msg, isError = true) {
+      const el = document.getElementById('authAlert');
+      el.classList.remove('hidden');
+      el.className = isError
+        ? 'p-3 rounded-xl text-xs bg-red-500/15 text-red-300 border border-red-500/30'
+        : 'p-3 rounded-xl text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-500/30';
+      el.innerText = msg;
+    }
+
+    async function sendCode() {
+      const api_id = document.getElementById('apiId').value.trim();
+      const api_hash = document.getElementById('apiHash').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const btn = document.getElementById('btnSendCode');
+      if (!api_id || !api_hash || !phone) { showAuthAlert('Заполните API ID, Hash и Телефон'); return; }
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-xs"></i> Отправка...';
+      document.getElementById('authAlert').classList.add('hidden');
+      try {
+        const res = await fetch('/api/auth/send_code', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ api_id: parseInt(api_id), api_hash, phone })
+        });
+        const rawText = await res.text();
+        let data;
+        try { data = JSON.parse(rawText); } catch { data = { error: rawText }; }
+        if (res.ok && data.success) {
+          document.getElementById('authStep1').classList.add('hidden');
+          document.getElementById('authStep2').classList.remove('hidden');
+          showAuthAlert('Код отправлен в Telegram!', false);
+        } else { showAuthAlert(data.error || 'Ошибка отправки кода'); }
+      } catch { showAuthAlert('Нет связи с Telegram. Настройте Прокси или включите VPN.'); }
+      finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane text-sm"></i> Получить код в Telegram'; }
+    }
+
+    async function signIn() {
+      const code = document.getElementById('authCode').value.trim();
+      const password = document.getElementById('authPassword').value.trim();
+      const btn = document.getElementById('btnSignIn');
+      if (!code) { showAuthAlert('Введите код подтверждения'); return; }
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-xs"></i> Вход...';
+      try {
+        const res = await fetch('/api/auth/sign_in', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, password: password || null })
+        });
+        const rawText = await res.text();
+        let data;
+        try { data = JSON.parse(rawText); } catch { data = { error: rawText }; }
+        if (data.requires_password) {
+          document.getElementById('passwordField').classList.remove('hidden');
+          showAuthAlert('Введите 2FA облачный пароль');
+        } else if (res.ok && data.success) {
+          checkStatus();
+        } else {
+          showAuthAlert(data.error || 'Ошибка входа');
+        }
+      } catch { showAuthAlert('Ошибка соединения'); }
+      finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-right-to-bracket text-sm"></i> Войти в аккаунт'; }
+    }
+
+    async function logout() {
+      if (confirm('Выйти из аккаунта?')) {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        location.reload();
+      }
+    }
+
+    window.onload = () => {
+      checkStatus();
+      const fc = document.querySelector('.gift-card');
+      if (fc) fc.classList.add('active');
+    };
+  </script>
+</body>
+</html>

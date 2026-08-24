@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.env
+venv/
+.venv/
+
+# Telethon session files
+*.session
+*.session-journal
+
+# Logs & IDE
+.vscode/
+.idea/
+*.log
+
+# PyInstaller
+build/
+dist/
+*.spec
+*.zip
