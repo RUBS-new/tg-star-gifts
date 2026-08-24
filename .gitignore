@@ -21,3 +21,4 @@ dist/
 *.spec
 *.zip
 version.txt
+/*.png
