@@ -242,8 +242,8 @@
           </label>
 
           <button onclick="openConfirmModal()" id="btnSubmit" class="btn-gold flex items-center justify-center gap-2 mt-2">
-            <i class="fa-solid fa-star text-sm"></i>
-            <span>Отправить за 50 Stars ⭐</span>
+            <i class="fa-solid fa-paper-plane text-sm"></i>
+            <span>Отправить за 50 Stars</span>
           </button>
 
           <div id="statusAlert" class="hidden p-3 rounded-xl text-xs"></div>
@@ -281,7 +281,7 @@
           <div class="text-xs font-bold text-gray-100 mb-1 leading-tight">{{ gift.name }}</div>
           <div class="flex items-center gap-1.5 mt-auto pt-1">
             <span class="text-[11px] font-bold text-gold bg-gold/15 border border-gold/30 px-2 py-0.5 rounded-md flex items-center gap-1">
-              <i class="fa-solid fa-star text-[9px]"></i> 50 ⭐
+              <i class="fa-solid fa-star text-[9px]"></i> 50
             </span>
             <span class="text-[9px] uppercase tracking-wider font-semibold text-gray-400 bg-surface px-1.5 py-0.5 rounded-md">{{ gift.badge }}</span>
           </div>
@@ -353,7 +353,7 @@
 
       <div class="flex gap-2.5 pt-1">
         <button onclick="confirmAndSendGift()" id="btnConfirmSend" class="btn-gold py-2.5 text-xs font-bold flex items-center justify-center gap-2 flex-1 shadow-lg shadow-gold/20">
-          <i class="fa-solid fa-check text-xs"></i> Да, отправить за 50 ⭐
+          <i class="fa-solid fa-check text-xs"></i> Да, отправить за 50 Stars
         </button>
         <button onclick="closeConfirmModal()" class="px-4 py-2.5 rounded-xl bg-surface border border-surface-border text-xs text-gray-300 hover:text-white transition">
           Отмена
