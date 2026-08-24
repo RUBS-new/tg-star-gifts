@@ -49,6 +49,14 @@ python app.py
 
 Open **`http://127.0.0.1:5050`** in your browser.
 
+### 📁 Session Storage
+
+To keep your workspace clean, session files are securely stored in the system AppData directory:
+* **Windows:** `%APPDATA%\TelegramStarGifts\` (`C:\Users\<User>\AppData\Roaming\TelegramStarGifts\`)
+* **Linux / macOS:** `~/.config/TelegramStarGifts/`
+
+No temporary `.session` files will clutter your working directory.
+
 ### ⚙️ Configuration
 
 Copy `.env.example` to `.env` (optional):
@@ -95,6 +103,14 @@ python app.py
 ```
 
 Откройте в браузере: **`http://127.0.0.1:5050`**
+
+### 📁 Хранение сессий
+
+Для сохранения чистоты на рабочем столе и в папке программы все файлы сессий Telegram сохраняются в стандартной системной директории:
+* **Windows:** `%APPDATA%\TelegramStarGifts\` (`C:\Users\<Имя_Пользователя>\AppData\Roaming\TelegramStarGifts\`)
+* **Linux / macOS:** `~/.config/TelegramStarGifts/`
+
+Рядом с `.exe` файлом не создаётся никаких лишних временных файлов.
 
 ### ⚙️ Настройка
 

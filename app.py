@@ -27,7 +27,22 @@ API_ID = os.getenv("TELEGRAM_API_ID")
 API_HASH = os.getenv("TELEGRAM_API_HASH")
 HOST = os.getenv("HOST", "127.0.0.1")
 PORT = int(os.getenv("PORT", 5050))
-SESSION_FILE = "user_session"
+
+APPDATA_DIR = os.path.join(os.environ.get("APPDATA") or os.path.expanduser("~"), "TelegramStarGifts")
+os.makedirs(APPDATA_DIR, exist_ok=True)
+SESSION_FILE = os.path.join(APPDATA_DIR, "user_session")
+
+for old_name in ["user_session.session", "user_session.session-journal"]:
+    if os.path.exists(old_name):
+        try:
+            target_path = os.path.join(APPDATA_DIR, old_name)
+            if not os.path.exists(target_path):
+                import shutil
+                shutil.move(old_name, target_path)
+            else:
+                os.remove(old_name)
+        except Exception:
+            pass
 
 GIFTS_CATALOG = [
     {"id": "5956217000635139069", "name": "Новогодний мишка",      "stars": 50, "icon": "🧸", "badge": "New Year",    "image": "Новогодний мишка.webp"},
@@ -436,8 +451,20 @@ async def sign_in(req: AuthSignInReq):
 @app.post("/api/auth/logout")
 async def logout():
     global client
-    if client and client.is_connected():
-        await client.log_out()
+    if client:
+        try:
+            if client.is_connected():
+                await client.log_out()
+        except Exception:
+            pass
+        client = None
+    for ext in [".session", ".session-journal"]:
+        fpath = SESSION_FILE + ext
+        if os.path.exists(fpath):
+            try:
+                os.remove(fpath)
+            except Exception:
+                pass
     return {"success": True}
 
 
