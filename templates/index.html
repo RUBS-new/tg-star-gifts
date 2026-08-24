@@ -740,7 +740,7 @@
         const res = await fetch('/api/gifts/send', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ target_user, gift_id: parseInt(selectedGift.id), message, hide_name })
+          body: JSON.stringify({ target_user, gift_id: String(selectedGift.id).trim(), message, hide_name })
         });
         const rawText = await res.text();
         let data;

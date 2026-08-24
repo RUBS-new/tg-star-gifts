@@ -30,17 +30,17 @@ PORT = int(os.getenv("PORT", 5050))
 SESSION_FILE = "user_session"
 
 GIFTS_CATALOG = [
-    {"id": 5956217000635139069, "name": "Новогодний мишка",      "stars": 50, "icon": "🧸", "badge": "New Year",    "image": "Новогодний мишка.webp"},
-    {"id": 5800655655995968830, "name": "Мишка влюбленных",      "stars": 50, "icon": "🧸", "badge": "Love",        "image": "Мишка влюбленных.webp"},
-    {"id": 5922558454332916696, "name": "Елка",                  "stars": 50, "icon": "🎄", "badge": "Holiday",     "image": "Елка.webp"},
-    {"id": 5801108895304779062, "name": "Сердце влюбленных",     "stars": 50, "icon": "💝", "badge": "Romantic",    "image": "Сердце влюбленных .webp"},
-    {"id": 5866352046986232958, "name": "Мишка на 8 марта",      "stars": 50, "icon": "🧸", "badge": "Spring",      "image": "Мишка на 8 марта.webp"},
-    {"id": 5893356958802511476, "name": "Мишка на День Патрика", "stars": 50, "icon": "🧸", "badge": "St. Patrick", "image": "Мишка на День Патрика.webp"},
-    {"id": 5935895822435615975, "name": "Мишка на 1 апреля",     "stars": 50, "icon": "🧸", "badge": "Fun",         "image": "Мишка на 1 апреля.webp"},
-    {"id": 5969796561943660080, "name": "Мишка на Пасху",        "stars": 50, "icon": "🧸", "badge": "Easter",      "image": "Мишка на Пасху.webp"},
-    {"id": 6026193266406327981, "name": "Мишка на 1 мая",        "stars": 50, "icon": "🧸", "badge": "May Day",     "image": "Мишка на 1 мая.webp"},
-    {"id": 5974210632977745012, "name": "Мишка на ЧМ",           "stars": 50, "icon": "🧸", "badge": "Sport",       "image": "Мишка на Чемпионат Мира.webp"},
-    {"id": 6046178578163303744, "name": "Мишка военный",         "stars": 50, "icon": "🧸", "badge": "Special",     "image": "Мишка военный.webp"},
+    {"id": "5956217000635139069", "name": "Новогодний мишка",      "stars": 50, "icon": "🧸", "badge": "New Year",    "image": "Новогодний мишка.webp"},
+    {"id": "5800655655995968830", "name": "Мишка влюбленных",      "stars": 50, "icon": "🧸", "badge": "Love",        "image": "Мишка влюбленных.webp"},
+    {"id": "5922558454332916696", "name": "Елка",                  "stars": 50, "icon": "🎄", "badge": "Holiday",     "image": "Елка.webp"},
+    {"id": "5801108895304779062", "name": "Сердце влюбленных",     "stars": 50, "icon": "💝", "badge": "Romantic",    "image": "Сердце влюбленных .webp"},
+    {"id": "5866352046986232958", "name": "Мишка на 8 марта",      "stars": 50, "icon": "🧸", "badge": "Spring",      "image": "Мишка на 8 марта.webp"},
+    {"id": "5893356958802511476", "name": "Мишка на День Патрика", "stars": 50, "icon": "🧸", "badge": "St. Patrick", "image": "Мишка на День Патрика.webp"},
+    {"id": "5935895822435615975", "name": "Мишка на 1 апреля",     "stars": 50, "icon": "🧸", "badge": "Fun",         "image": "Мишка на 1 апреля.webp"},
+    {"id": "5969796561943660080", "name": "Мишка на Пасху",        "stars": 50, "icon": "🧸", "badge": "Easter",      "image": "Мишка на Пасху.webp"},
+    {"id": "6026193266406327981", "name": "Мишка на 1 мая",        "stars": 50, "icon": "🧸", "badge": "May Day",     "image": "Мишка на 1 мая.webp"},
+    {"id": "5974210632977745012", "name": "Мишка на ЧМ",           "stars": 50, "icon": "🧸", "badge": "Sport",       "image": "Мишка на Чемпионат Мира.webp"},
+    {"id": "6046178578163303744", "name": "Мишка военный",         "stars": 50, "icon": "🧸", "badge": "Special",     "image": "Мишка военный.webp"},
 ]
 
 client: Optional[TelegramClient] = None
@@ -235,7 +235,7 @@ class AuthSignInReq(BaseModel):
 
 class SendGiftReq(BaseModel):
     target_user: str
-    gift_id: int
+    gift_id: str
     message: Optional[str] = ""
     hide_name: bool = False
 
@@ -479,11 +479,12 @@ async def send_gift(req: SendGiftReq):
         target_entity = await client.get_entity(req.target_user)
         recipient_name = getattr(target_entity, "first_name", "") or getattr(target_entity, "title", req.target_user)
 
+        parsed_gift_id = int(str(req.gift_id).strip())
         msg_obj = types.TextWithEntities(text=req.message, entities=[]) if req.message else None
 
         invoice = types.InputInvoiceStarGift(
             peer=target_peer,
-            gift_id=req.gift_id,
+            gift_id=parsed_gift_id,
             hide_name=True if req.hide_name else None,
             message=msg_obj
         )
