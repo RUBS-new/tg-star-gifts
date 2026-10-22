@@ -2,6 +2,8 @@
 
 # 🎁 Telegram Star Gifts Sender
 
+# **Not relevant / Не актуально**
+
 **Modern Web UI for sending Telegram Star Gifts via MTProto**
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
